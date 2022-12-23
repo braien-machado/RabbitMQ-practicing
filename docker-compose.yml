@@ -1,0 +1,39 @@
+version: '3.6'
+
+services:
+  rabbit:
+    image: rabbitmq:3.11-management
+    hostname: 'rabbitmqServer'
+    container_name: rabbitmq
+    restart: always
+    networks:
+      - rabbit-network
+    ports:
+      - 15672:15672
+      - 5672:5672
+  producer:
+    build: 
+      context: .
+    command: python3 -u send.py
+    container_name: producer
+    networks:
+      - rabbit-network
+    environment:
+      - RABBITMQ_HOST=rabbitmqServer
+    depends_on:
+      - rabbit
+  consumer:
+    build: 
+      context: .
+    command: python3 -u receive.py
+    container_name: consumer
+    networks:
+      - rabbit-network
+    environment:
+      - RABBITMQ_HOST=rabbitmqServer
+    depends_on:
+      - rabbit
+
+networks:
+  rabbit-network:
+    driver: bridge

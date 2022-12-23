@@ -1,6 +1,6 @@
-import pika, sys
+import pika, sys, os
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.environ.get('RABBITMQ_HOST')))
 channel = connection.channel()
 channel.queue_declare(queue='queue', durable=True)
 
